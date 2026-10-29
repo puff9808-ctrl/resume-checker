@@ -30,7 +30,7 @@ ${job}`;
     );
     const data = await r.json();
     const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-    if (!text) return res.status(500).json({ error: "No response from AI. Check your API key." });
+  if (!text) return res.status(500).json({ error: data?.error?.message || JSON.stringify(data) });
     res.status(200).json(JSON.parse(text));
   } catch (e) {
     res.status(500).json({ error: "Something went wrong: " + e.message });

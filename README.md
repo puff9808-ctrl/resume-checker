@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  <a href="https://resume-checker-kn95l7dlz-homie8.vercel.app/">🚀 Live Demo</a> •
+  <a href="https://resume-checker-indol-six.vercel.app/">🚀 Live Demo</a> •
   <a href="https://github.com/puff9808-ctrl/resume-checker">📂 GitHub Repository</a>
 </p>
 

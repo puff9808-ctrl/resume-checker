@@ -1,4 +1,4 @@
-// Vercel serverless function: keeps your API key secret on the server
+export const config = { maxDuration: 60 };// Vercel serverless function: keeps your API key secret on the server
 export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).json({ error: "POST only" });
 

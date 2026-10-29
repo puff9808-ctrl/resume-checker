@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Resume Checker</title>
+<style>
+  body { font-family: system-ui, sans-serif; max-width: 720px; margin: 0 auto; padding: 20px; line-height: 1.5; color: #1a1a1a; }
+  textarea { width: 100%; height: 160px; padding: 10px; font: inherit; border: 1px solid #bbb; border-radius: 8px; box-sizing: border-box; }
+  label { font-weight: 600; display: block; margin: 16px 0 6px; }
+  button { margin-top: 16px; padding: 12px 20px; font-size: 16px; background: #2457d6; color: #fff; border: 0; border-radius: 8px; cursor: pointer; }
+  button:disabled { opacity: .6; }
+  .score { font-size: 48px; font-weight: 700; }
+  .tag { display: inline-block; padding: 4px 10px; margin: 3px; border-radius: 12px; font-size: 14px; }
+  .ok { background: #dff5e1; } .miss { background: #fde2e2; }
+  #error { color: #b00020; margin-top: 12px; }
+</style>
+</head>
+<body>
+<h1>Resume Checker</h1>
+<p>Paste your resume and a job description to see how well they match.</p>
+
+<label for="resume">Your resume</label>
+<textarea id="resume" placeholder="Paste resume text here"></textarea>
+
+<label for="job">Job description</label>
+<textarea id="job" placeholder="Paste job description here"></textarea>
+
+<button id="btn" onclick="analyze()">Check my resume</button>
+<div id="error"></div>
+<div id="result"></div>
+
+<script>
+async function analyze() {
+  const btn = document.getElementById("btn");
+  const err = document.getElementById("error");
+  const out = document.getElementById("result");
+  err.textContent = ""; out.innerHTML = "";
+  btn.disabled = true; btn.textContent = "Checking...";
+
+  try {
+    const res = await fetch("/api/analyze", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        resume: document.getElementById("resume").value,
+        job: document.getElementById("job").value,
+      }),
+    });
+    const d = await res.json();
+    if (!res.ok) throw new Error(d.error || "Request failed");
+
+    out.innerHTML = `
+      <h2>Match score</h2>
+      <div class="score">${d.score}/100</div>
+      <h3>Skills you have</h3>${d.matched_skills.map(s => `<span class="tag ok">${s}</span>`).join("")}
+      <h3>Skills missing</h3>${d.missing_skills.map(s => `<span class="tag miss">${s}</span>`).join("")}
+      <h3>Improved bullet points</h3><ul>${d.improved_bullets.map(b => `<li>${b}</li>`).join("")}</ul>`;
+  } catch (e) {
+    err.textContent = e.message;
+  }
+  btn.disabled = false; btn.textContent = "Check my resume";
+}
+</script>
+</body>
+</html>
